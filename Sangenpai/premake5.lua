@@ -13,6 +13,6 @@ project "Sangenpai"
 		"src/**.cpp"
 	}
 	includedirs {
-		"%{wks.location}/Beryllium/include",
+		"%{wks.location}/Beryllium/core/include",
 		"include"
 	}
