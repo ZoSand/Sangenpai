@@ -14,5 +14,6 @@ project "Sangenpai"
 	}
 	includedirs {
 		"%{wks.location}/Beryllium/core/include",
+		"%{wks.location}/Beryllium/vendor/glm",
 		"include"
 	}
