@@ -8,5 +8,6 @@ Beryllium::Application* Beryllium::CreateApplication(Beryllium::CmdArgs _args)
 	Beryllium::ApplicationSpecs specs;
 	specs.name = "Sangenpai";
 	specs.args = _args;
+	specs.renderer = new OpenGLRenderer();
 	return new Sangenpai::Application(specs);
 }

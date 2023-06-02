@@ -10,8 +10,6 @@ namespace Sangenpai
 	public:
 		Application(Beryllium::ApplicationSpecs _specs);
 		~Application();
-
-		virtual bool OnEvent(Beryllium::Event& _event) override;
 	};
 }
 
