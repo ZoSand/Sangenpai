@@ -1,12 +1,12 @@
 #include <TriangleLayer.hpp>
 
 namespace Sangenpai {
-
 	void TriangleLayer::OnAttach()
 	{
 		std::shared_ptr<Beryllium::VertexBuffer> vertexBuffer;
 		std::shared_ptr<Beryllium::IndexBuffer> indexBuffer;
 
+#pragma region data initialize
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//                                                    RENDERER            STUFF                                                     //
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,36 +29,10 @@ namespace Sangenpai {
 			0, 2, 3
 		};*/
 
-		std::string vertexSrc = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 i_Position;
-			out vec3 t_Position;
-
-			void main()
-			{
-				gl_Position = vec4(i_Position, 1.0);
-				t_Position = i_Position; 
-			}
-		)";
-		std::string fragmentSrc = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 o_Color;
-			in vec3 t_Position;
-
-			vec4 remap(vec4 _val, vec2 _min, vec2 _max)
-			{
-				return _max.x + (_val - _min.x) * (_max.y -  _max.x) / (_min.y - _min.x);
-			}
-
-			void main()
-			{
-				o_Color = vec4(0.8, 0.2, 0.3, 0.5);
-				o_Color = remap(vec4(t_Position, 0.5), vec2(-1, 1), vec2(0, 1));
-			}
-		)";
+		std::string vertexSrc = Beryllium::OpenGLShader::GetDefaultVertex();
+		std::string fragmentSrc = Beryllium::OpenGLShader::GetDefaultFragment();
 		//END OF TODO
+#pragma endregion data initialize
 
 		m_vertexArray.reset(Beryllium::Renderer::CreateVertexArray());
 
@@ -75,6 +49,9 @@ namespace Sangenpai {
 		m_vertexArray->SetIndexBuffer(indexBuffer);
 
 		m_shader.reset(Beryllium::Renderer::CreateShader(vertexSrc, fragmentSrc));
+
+		auto& [w, h] = Beryllium::Application::Get()->GetWindow()->GetSize();
+		m_mainCamera.SetProjection(-w / h, w / h, -1, 1);
 	}
 
 	void TriangleLayer::OnDetach()
@@ -83,12 +60,38 @@ namespace Sangenpai {
 
 	void TriangleLayer::OnUpdate()
 	{
-		m_shader->Bind();
-		Beryllium::Renderer::Submit(m_vertexArray);
+		if (Beryllium::Keyboard::IsKeyPressed("D"))
+		{
+			m_mainCamera.Translate(glm::vec3(1.f * Beryllium::Time::DeltaTime(), 0, 0));
+		}
+		if (Beryllium::Keyboard::IsKeyPressed("Q"))
+		{
+			m_mainCamera.Translate(glm::vec3(-.1f, 0, 0));
+		}
+		if (Beryllium::Keyboard::IsKeyPressed("Z"))
+		{
+			m_mainCamera.Translate(glm::vec3(0,.1f,  0));
+		}
+		if (Beryllium::Keyboard::IsKeyPressed("S"))
+		{
+			m_mainCamera.Translate(glm::vec3(0, -.1f, 0));
+		}
+	}
+
+	void TriangleLayer::OnRender()
+	{
+		Beryllium::Renderer::BeginScene(m_mainCamera);
+		Beryllium::Renderer::Submit(m_vertexArray, m_shader);
+		Beryllium::Renderer::EndScene();
 	}
 
 	bool TriangleLayer::OnEvent(Beryllium::Event& _event)
 	{
-		return false;
+		if (_event.Is<Beryllium::Events::WindowResized>())
+		{
+			auto& [w, h] = Beryllium::Application::Get()->GetWindow()->GetSize();
+			m_mainCamera.SetProjection(-w / h, w / h, -1, 1);
+		}
+		return false; //we don't want to block event propagation to other layers
 	}
 }
