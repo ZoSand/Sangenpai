@@ -9,14 +9,12 @@ namespace Sangenpai
 	{
 	public:
 		virtual void OnAttach() override;
-		virtual void OnDetach() override;
 		virtual void OnUpdate() override;
 		virtual void OnRender() override;
 		virtual bool OnEvent(Beryllium::Event& _event) override;
 
 	private:
-		std::shared_ptr<Beryllium::VertexArray> m_vertexArray;
-		std::shared_ptr<Beryllium::Shader> m_shader;
+		Beryllium::Sprite m_sprite;
 
 		Beryllium::OrthographicCamera m_mainCamera;
 	};
